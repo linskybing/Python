@@ -12,10 +12,11 @@ class System:
         #member variable
         self.user_account = ''
         self.user_password = ''
-        self.cookie = False
-        self.database_ob = DataBase()
+        self.cookie = False        
         self.DataBaseCheck()
         self.CookieCheck()
+
+        self.database_ob = DataBase(self.user_account)
 
         # method        
         self.Loading()        
@@ -46,10 +47,10 @@ class System:
             mode = int(input('Please choose the number of features that you want: '))
 
             if (mode == 1):
-                pass                    
+                self.database_ob.AddRecord(self.user_account)                    
 
             elif (mode == 2):
-                pass                    
+                self.database_ob.ShowHistory(self.user_account)                    
 
             elif (mode == 3):
                 self.Logout()                    
@@ -150,17 +151,23 @@ class System:
 
 class DataBase:
 
-    def __init__(self):
+    def __init__(self, account):
 
         #member variable
         self.balance_data = {}
         self.financial_records = {}
         
         #member method
-        self.ReadUserRecord()
+        self.ReadUserRecord(account)
         self.ReadBalanceData()
-    
-    def ReadUserRecord(self):
+
+
+    #############################################
+    # About Read database                       #
+    #############################################
+
+    #read the record of the user    
+    def ReadUserRecord(self, account):
         #check database whether user financial records exist or not
         if (not(os.path.exists(user_data_record))):
             fh = open(user_data_record, 'w')
@@ -178,12 +185,31 @@ class DataBase:
         #        'change': [],
         #   },
         # }
-
+        self.financial_records[account] = {}
+        self.financial_records[account]['balance'] = []
+        self.financial_records[account]['change'] = []
         for i in range(0, len(data)):
             account, description, change = data[i].split()
+            self.financial_records[account]['balance'].append(description)
+            self.financial_records[account]['change'].append(int(change))
 
-            self.financial_records[account]['balance'] += description
-            self.financial_records[account]['change'] += change        
+    #read how many money user has  
+    def ReadBalanceData(self):
+
+        #check database whether has user financial balance  
+        if (not(os.path.exists(user_balance))):
+            fh = open(user_balance, 'w')
+            fh.close()
+        fh = open(user_balance, 'r')
+        
+        for temp in fh.readlines():
+            data = temp.split()
+            self.balance_data[data[0]] = int(data[1])
+        fh.close()    
+
+    #############################################
+    # About Modify data                         #
+    #############################################
 
     #Add some financial records
     def AddRecord(self, account):
@@ -197,7 +223,7 @@ class DataBase:
 
         # receive data and record it
         data_list = input('Add an expense or income record with description and amount:').split(',')
-
+        
         # maybe there are many reocrd that the user want to reocrd
         # then we use data_list that record seperated by ','
         # deal with data by sequence
@@ -205,49 +231,52 @@ class DataBase:
         for data in data_list:
 
             description, change = data.split(' ')
-            change = int(change)
-            self.financial_records[account]['balance'] += description
-            self.financial_records[account]['change'] += change
+            change = int(change)            
+            self.financial_records[account]['balance'].append(description)
+            self.financial_records[account]['change'].append(int(change))  
 
             self.balance_data[account] += change
-            print(f'Now you have {self.financial_records[account]} dollars.')
+            print(f'Now you have {self.balance_data[account]} dollars.\n')
 
-            # modify change into database file
-            self.WriteRecord(self, account, description, change)
+        self.WriteRecord(account)
+        self.ChangeBalance()
 
-    def WriteRecord(self, account, describe, change):
+    # update record in database
+    def WriteRecord(self, account):
 
-        # how many the user record has
-        record_number = len(self.financial_records[account]['balance'])
+        fh = open(user_data_record, 'w')        
+        for account in self.financial_records:
+            records = self.financial_records[account]
+            for i in range(0, len(records['balance'])):                
+                fh.write(f"{account}\t{records['balance'][i]}\t{records['change'][i]}\n")
 
-        fh = open(user_data_record, 'r+')
-        fh_content = fh.readlines()
-
-        #find the user data in which line        
-        index = 0
-        for line in fh_content:
-            record = line.split()
-            index += 1
-            if (record[0] == account): break
-    ############################################################################     
-    
-    def ReadBalanceData(self):
-
-        #check database whether has user financial balance  
-        if (not(os.path.exists(user_balance))):
-            fh = open(user_balance, 'w')
-            fh.close()
-        fh = open(user_balance, 'r')
-        
-        for temp in fh.readlines():
-            data = temp.split()
-            self.balance_data[data[0]] = data[1]
         fh.close()
+    
+    def ChangeBalance(self):
 
+        fh = open(user_balance, 'w')
 
+        for account in self.balance_data:            
+            fh.write(f'{account}\t{self.balance_data[account]}\n')
+        
+        fh.close()       
+    
+    #############################################
+    # About Showing data                        #
+    #############################################
+
+    def ShowHistory(self, account):
+
+        print(f'Now you have {self.balance_data[account]} dollars.\n')
+        print(f'------your record history------\n')
+
+        for account in self.financial_records:
+
+            records = self.financial_records[account]            
+            for i in range(0, len(records['balance'])):            
+                print(f"{self.financial_records[account]['balance'][i]:10s}{self.financial_records[account]['change'][i]:10d}")  
+
+        print(f'-------------------------------\n')
 
 if __name__ == '__main__':   
     sys = System()
-    ##money = int(input('How much money do you have? '))
-    ##describe, change = input('Add an expense or income record with description and amount:').split()
-    ##print(f'Now you have {money + int(change)} dollars.')
