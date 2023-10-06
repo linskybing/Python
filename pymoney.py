@@ -14,30 +14,49 @@ class System:
         self.user_password = ''
         self.cookie = False
         self.database_ob = DataBase()
+        self.DataBaseCheck()
+        self.CookieCheck()
 
         # method        
         self.Loading()        
 
     def Loading(self):
 
-        self.DataBaseCheck()
-        self.CookieCheck()
-
         print('Welcome to the pymoeny\n')
 
         if (not(self.cookie)):
-            print('Do you want to (1 : Login) or (2 : Register) ? \n')
-            mode = input('Please choose the number of features that you want.')
+           
+            
+            print('Do you want to (1 : Login) or (2 : Register) or (Other keyword: Exist) ? \n')
+            mode = int(input('Please choose the number of features that you want: '))
 
-            if (mode == '1'):
+            if (mode == 1):
                 self.Login()
+                self.Loading()                
 
-            elif (mode == '2'):
+            elif (mode == 2):
                 self.Register()
+
             else: 
-                pass
+                mode = -1
         else:
-            print(f'Hello {self.user_account:6s} \n')
+            mode = 0
+            
+            print(f'Hello {self.user_account:5s}!\n Which features do you want ?\n (1 : Add some financial records) or (2 : Show the history records) or (3 : Logout) or (-1: Exist)\n')
+            mode = int(input('Please choose the number of features that you want: '))
+
+            if (mode == 1):
+                pass                    
+
+            elif (mode == 2):
+                pass                    
+
+            elif (mode == 3):
+                self.Logout()                    
+
+            else:
+                pass
+
 
 
     # check database dir exist or not
@@ -66,21 +85,24 @@ class System:
             fh = open(cookie_path, 'w')
             fh.close()
 
+        
+        fh = open(cookie_path, 'r')
+        data = fh.readline()
+        if (data == '1'):
+            self.cookie = True 
         else:
-            fh = open(cookie_path, 'r')
-            data = fh.readline()
-            if (data):
-                self.cookie = True 
-
+            self.cookie = False 
+        
     def Login(self):
             
         #input account data
         account = input('{:6s}'.format('Account: '))
         password = input('{:6s}'.format('Password: '))
+        print()
 
         # CheckUserDataExist
         if (self.user_account and self.user_password):
-            print('{:6s}{:6s}'.format((account, password)))
+            
             if (account == self.user_account and password == self.user_password):
                 self.WriteCookie(1)
             else:
@@ -124,11 +146,7 @@ class System:
             self.cookie = False
 
     def Logout(self):
-
         self.WriteCookie(0)
-
-    def Exit(self):
-        pass
 
 class DataBase:
 
@@ -165,13 +183,57 @@ class DataBase:
             account, description, change = data[i].split()
 
             self.financial_records[account]['balance'] += description
-            self.financial_records[account]['change'] += change                
+            self.financial_records[account]['change'] += change        
 
+    #Add some financial records
+    def AddRecord(self, account):
 
-               
+        # if don't have any reocrd then create one
+        if (account not in self.balance_data):
+            money = int(input('How much money do you have? '))
+            self.balance_data[account] = money
+            self.financial_records[account]['balance'] = []
+            self.financial_records[account]['change'] = []
+
+        # receive data and record it
+        data_list = input('Add an expense or income record with description and amount:').split(',')
+
+        # maybe there are many reocrd that the user want to reocrd
+        # then we use data_list that record seperated by ','
+        # deal with data by sequence
+
+        for data in data_list:
+
+            description, change = data.split(' ')
+            change = int(change)
+            self.financial_records[account]['balance'] += description
+            self.financial_records[account]['change'] += change
+
+            self.balance_data[account] += change
+            print(f'Now you have {self.financial_records[account]} dollars.')
+
+            # modify change into database file
+            self.WriteRecord(self, account, description, change)
+
+    def WriteRecord(self, account, describe, change):
+
+        # how many the user record has
+        record_number = len(self.financial_records[account]['balance'])
+
+        fh = open(user_data_record, 'r+')
+        fh_content = fh.readlines()
+
+        #find the user data in which line        
+        index = 0
+        for line in fh_content:
+            record = line.split()
+            index += 1
+            if (record[0] == account): break
+    ############################################################################     
+    
     def ReadBalanceData(self):
 
-        #check database  whether has user financial balance  
+        #check database whether has user financial balance  
         if (not(os.path.exists(user_balance))):
             fh = open(user_balance, 'w')
             fh.close()
