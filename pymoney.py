@@ -15,7 +15,6 @@ class System:
         self.cookie = False        
         self.DataBaseCheck()
         self.CookieCheck()
-
         self.database_ob = DataBase(self.user_account)
 
         # method        
@@ -25,6 +24,7 @@ class System:
 
         print('Welcome to the pymoeny\n')
 
+        # not login
         if (not(self.cookie)):
            
             
@@ -32,14 +32,15 @@ class System:
             mode = int(input('Please choose the number of features that you want: '))
 
             if (mode == 1):
-                self.Login()
-                self.Loading()                
+                self.Login()                               
 
             elif (mode == 2):
                 self.Register()
 
             else: 
-                mode = -1
+                pass
+
+        # already login
         else:
             mode = 0
             
@@ -97,15 +98,17 @@ class System:
     def Login(self):
             
         #input account data
+        
         account = input('{:6s}'.format('Account: '))
         password = input('{:6s}'.format('Password: '))
-        print()
-
+        
         # CheckUserDataExist
         if (self.user_account and self.user_password):
             
             if (account == self.user_account and password == self.user_password):
+                self.cookie = True
                 self.WriteCookie(1)
+
             else:
                 print("Account or Password doesn't match.\n")
         else :
@@ -121,14 +124,20 @@ class System:
             print('Account has already exist.')
         else :
             #write data into database
-            fh = open(user_infomation_path, 'w')
-            fh.write(f'{account}\t{password}')
-            fh.close()
+            fh = open(user_infomation_path, 'r')
+            if(len(fh.readlines()) > 0):
+                fh = open(user_infomation_path, 'a')
+                fh.write(f'\n{account}\t{password}')
+                fh.close()
+            else:
+                fh = open(user_infomation_path, 'w')
+                fh.write(f'{account}\t{password}')
+                fh.close()
 
             #success register 
             self.WriteCookie(1)
             self.DataBaseCheck()
-            self.Login()
+            self.Loading()
 
     def WriteCookie(self, flag):
 
@@ -266,17 +275,19 @@ class DataBase:
     #############################################
 
     def ShowHistory(self, account):
+        if (account in self.balance_data):
+            print(f'Now you have {self.balance_data[account]} dollars.\n')
+            print(f'------your record history------\n')
 
-        print(f'Now you have {self.balance_data[account]} dollars.\n')
-        print(f'------your record history------\n')
+            for account in self.financial_records:
 
-        for account in self.financial_records:
+                records = self.financial_records[account]            
+                for i in range(0, len(records['balance'])):            
+                    print(f"{self.financial_records[account]['balance'][i]:10s}{self.financial_records[account]['change'][i]:10d}")  
 
-            records = self.financial_records[account]            
-            for i in range(0, len(records['balance'])):            
-                print(f"{self.financial_records[account]['balance'][i]:10s}{self.financial_records[account]['change'][i]:10d}")  
+            print(f'-------------------------------\n')
 
-        print(f'-------------------------------\n')
-
+        else:
+            print(f"you don't have any record. please add new record first")
 if __name__ == '__main__':   
     sys = System()
