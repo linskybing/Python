@@ -1,5 +1,4 @@
 test	breakfast	-50
-test	salary	2000
-test	coffee	-25
+test	data1	100
+test	data	200
 test2	data1	50
-test2	data2	100
