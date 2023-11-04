@@ -241,11 +241,12 @@ class DataBase:
             self.financial_records[account]['change'] = []
 
         # receive data and record it
-        data_list = input('Add an expense or income record with description and amount:').split(',')
-        
         # maybe there are many reocrd that the user want to reocrd
         # then we use data_list that record seperated by ','
         # deal with data by sequence
+
+        data_list = input('Add an expense or income record with description and amount:').split(',')
+        #self.financial_records[account]['balance'].update([tuple(balance, int(change)) for data in data_list for balance, change in data.strip().split())
         
         for data in data_list:
             data = data.strip()
