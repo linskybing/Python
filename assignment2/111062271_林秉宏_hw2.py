@@ -12,18 +12,19 @@ class System:
         self.initial()
 
     def initial(self):
-        try:
-            if(os.path.exists('./record.txt')):
-                self.readFile()
-                print('welcome back!')
-            else:
-                #read and convet into int
-                self.money = int(input('How much money do you have?\n'))
+        #try:
+        #    if(os.path.exists('./record.txt')):
+         #       self.readFile()
+          #      print('welcome back!')
+           # else:
+            #    #file not found
+             #   #read and convet into int
+              #  self.money = int(input('How much money do you have?\n'))
 
-        except ValueError:
+       # except ValueError:
 
-            print('Invalid value for money. Set to 0 by default.\n')
-
+        #    print('Invalid value for money. Set to 0 by default.\n')
+        self.readFile()
 
         while(1):
 
@@ -150,17 +151,40 @@ class System:
 
     def readFile(self):
         try:
-
+            
             with open('record.txt', 'r') as fh:
-                self.money = int(fh.readline())
+
+                # detect file whether is empty
+                data = fh.readline()
+                assert data, 'File is empty.'
+
+                # read user money
+                try:
+                    self.money = int(data)
+                except ValueError:
+                    print('Invild value for money in file. Set to 0 by default')
+                    self.money = 0
+                
                 for data in fh.readlines():
                     i, j = data.split()
                     self.record += [(i, int(j))]
-        except:
-            # the file does not exist
-            # no line is in the file
-            self.money = 0
-            self.record = []
+
+            print('welcome back!')
+    
+        except ValueError:
+            sys.stderr.write('Invild record value in the file.\n')
+
+        except AssertionError as e:
+            print(e)
+            print()
+
+        except FileNotFoundError:
+            try:
+                self.money = int(input('How much money do you have?\n'))
+
+            except ValueError:
+                print('Invalid value for money. Set to 0 by default.\n')
+    
 if __name__ == '__main__':
     
     sys = System()
