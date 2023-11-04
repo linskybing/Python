@@ -120,7 +120,7 @@ def delete(records):
     return records
 
 def save(initial_money, records):
-    money = initial_money + sum([e[1] for e in records])
+
     with open('record.txt', 'w') as fh:
         fh.write(str(initial_money))
         fh.write('\n')
