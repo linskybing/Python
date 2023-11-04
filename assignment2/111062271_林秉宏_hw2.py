@@ -1,5 +1,3 @@
-
-import os
 import sys
 
 class System:
@@ -9,33 +7,21 @@ class System:
         self.money = 0
         self.record = []
 
-        self.initial()
+        self.initilize()
 
-    def initial(self):
-        #try:
-        #    if(os.path.exists('./record.txt')):
-         #       self.readFile()
-          #      print('welcome back!')
-           # else:
-            #    #file not found
-             #   #read and convet into int
-              #  self.money = int(input('How much money do you have?\n'))
+    def initilize(self):
 
-       # except ValueError:
-
-        #    print('Invalid value for money. Set to 0 by default.\n')
         self.readFile()
 
         while(1):
 
             try:
                 action = input('What do you want to do (add / view / delete / exit)?\n')
-                assert action in {'exit', 'add', 'delete', 'view'}, 'Invalid command. Try again.'
 
                 #choose correspond to execute
                 if (action == 'exit'): 
+                    self.save()
                     break
-
                 elif (action == 'add'):
                     self.add()
 
@@ -46,14 +32,12 @@ class System:
                     self.view()
 
                 else:
-                    break
+                    sys.stderr.write('Invaild command. Try again.\n')
 
             except AssertionError as e:
                 #command not in the list
                 print(str(e))
                 print()
-
-        self.writeFile()
 
     def add(self):
 
@@ -70,12 +54,13 @@ class System:
 
                 i = string.strip().split()
 
-                assert len(i) % 2 == 0, 'Fail to add a record.'
+                assert len(i) % 2 == 0, 'The format of a record should be like this: breakfast -50.\nFail to add a record.\n'
 
                 temp += [(i[0], int(i[1]))]
 
             # convert list element of list into tuple datastructure
             # extend record list
+            
             self.record.extend(temp)
 
             # calculate money
@@ -84,7 +69,6 @@ class System:
         except AssertionError as e:
             # format error
             print(str(e))
-            print()
 
         except ValueError:
             # invaild input
@@ -139,7 +123,7 @@ class System:
         print(f'{"":=<20s} {"":=<10s}')
         print(f'Now you have {self.money} dollars.')
     
-    def writeFile(self):
+    def save(self):
 
         with open('record.txt', 'w') as fh:
             fh.write(str(self.money))
@@ -169,8 +153,7 @@ class System:
                     i, j = data.split()
                     self.record += [(i, int(j))]
 
-            print('welcome back!')
-    
+                print('welcome back!\n')
         except ValueError:
             sys.stderr.write('Invild record value in the file.\n')
 

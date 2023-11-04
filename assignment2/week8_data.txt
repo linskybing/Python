@@ -1,4 +1,9 @@
-3380
+1000
+add
 breakfast -50
+add
 lunch -70
+add
 salary 3500
+view
+exit

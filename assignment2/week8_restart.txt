@@ -1,0 +1,8 @@
+view
+add
+breakfast -50
+delete
+1
+add
+dinner -120
+exit
