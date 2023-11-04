@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 import sys
 
 # The 5 function definitions here
@@ -45,7 +46,15 @@ def initialize():
         # or file that exists some empty filed
         # we call that is invaild record value
         sys.stderr.write('Invild record value in the file.\n')
+    except AssertionError as e:
+        # file is empty
+        print(str(e))
+        
+        try:
+            initial_money = int(input('How much money do you have?\n'))
 
+        except ValueError:
+            print('Invalid value for money. Set to 0 by default.\n')
 
     except FileNotFoundError:
         # when file cannot be found
