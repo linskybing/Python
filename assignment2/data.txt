@@ -1,2 +1,17 @@
 1000
-breakfast -50, lunch -70, dinner -100, salary 3500
+add
+breakfast -50
+add
+lunch -70
+add
+dinner -100
+view
+add
+breakfast -50
+add
+salary 3500
+view
+delete
+3
+view
+exit

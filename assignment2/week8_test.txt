@@ -1,0 +1,14 @@
+abc
+hello
+add
+salary3000
+add
+salary 3500
+add
+breakfast -abc
+view
+delete
+sdfg
+delete
+10
+exit
