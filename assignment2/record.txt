@@ -21,4 +21,3 @@ breakfast -50
 breakfast -50
 salary 3500
 salary 3500
-salary 3500
