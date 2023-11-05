@@ -1,5 +1,6 @@
 1000
-addbreakfast -50
+add
+breakfast -50
 add
 lunch -70
 add

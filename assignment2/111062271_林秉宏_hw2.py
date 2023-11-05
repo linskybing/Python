@@ -148,6 +148,7 @@ def view_v2(initial_money, records):
         print(f'{"":=<20s} {"":=<10s}')
         pages = int(len(temp) / paging_size)
         if(pages < len(temp)/paging_size): pages +=1
+        if(pages == 0): pages = 1
         print(f'Page {page + 1} of {pages}')
 
         action = input('\nWhat do you want to do? (next / find / end)? \n')
@@ -296,6 +297,7 @@ def show_paging(records):
         print(f'{"":=<10s} {"":=<20s} {"":=<10s}')
         pages = int(len(temp) / paging_size)
         if(pages < len(temp)/paging_size): pages +=1
+        if(pages == 0):pages = 1
         print(f'Page {page + 1} of {pages}')
 
         action = input('\nWhat do you want to do? (next / find / end)? \n')
