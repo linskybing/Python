@@ -122,18 +122,20 @@ def view(initial_money, records):
     print(f'Now you have {money} dollars.')
 
 def view_v2(initial_money, records):
-    money = initial_money + sum([e[1] for e in records])
-
     #paging list
     temp = records 
+    # current page
     page = 0
+    # each page maximum size
     paging_size = 5
+    # start postion
     start_page = paging_size * 0
+    # end position
     end_page = min(paging_size * (page + 1), len(temp))
+    # extract range(start_page, end_page)
     temp2 = temp[start_page:end_page]
-    while(1):
-        action = input('\nWhat do you want to do? (next / find / end)? \n')
 
+    while(1):
         #show 
         print()
         # print table
@@ -144,12 +146,15 @@ def view_v2(initial_money, records):
             print(f'{i:<20s} {j:<10d}')
 
         print(f'{"":=<20s} {"":=<10s}')
-        print(f'Page {page + 1} of {len(temp) / paging_size}')
-        print(f'Now you have {money} dollars.')
+        pages = int(len(temp) / paging_size)
+        if(pages < len(temp)/paging_size): pages +=1
+        print(f'Page {page + 1} of {pages}')
 
+        action = input('\nWhat do you want to do? (next / find / end)? \n')
         if (action == 'next'):
             #next page
-            page += 1
+            if(page < pages-1):
+                page += 1
 
             # show list item from start_page to end_page
             start_page = paging_size * page
@@ -158,15 +163,15 @@ def view_v2(initial_money, records):
 
         elif (action == 'find'):
             keyword = input('\nPlease enter the keyword to find certain record: \n')
-            temp = [e for e in records if(e[0].find(keyword))]
-
+            temp = [e for e in records if(e[0].find(keyword) != -1)]
+            print(temp)
             # calculate paing number
+            page = 0
             start_page = paging_size * page
             end_page = min(paging_size * (page+1), len(temp))
 
             #paging
             temp2 = temp[start_page:end_page]
-            page = 0
 
         elif (action == 'end'):
             break
@@ -211,6 +216,33 @@ def delete(records):
         
     return records
 
+def delete_v2(records):
+
+    try:
+
+        # show position table
+        show_paging(records)
+
+        # select position to delete
+        # if enter the format that is not invild, would occur value error
+        # that means cannot convert into int
+        position = int(input('What record do you want to delete? (please input position number)\n'))
+        
+        # if postion is not in the range of records
+        # it cause AssertionError
+        assert position in range(0, len(records)), f"There's no record at postion No.{position}. Fail to delete a record."
+
+        # delete the data ot the position in list
+        del(records[position])
+    except ValueError:
+        print('Invaild format. Fail to delete a record.\n')
+        
+    except AssertionError as e:
+        print(str(e))
+        print()
+        
+    return records
+
 def save(initial_money, records):
 
     # using with-as to open file
@@ -228,12 +260,78 @@ def save(initial_money, records):
         for i, j in records:
             string = i + ' ' + str(j) + '\n'
             fh.writelines(string)
+def enumerate_custom(seq):
+    temp = []
+    for i in range(0, len(seq)):
+        temp += [(i, seq[i])]
+    return temp
+
+def show_paging(records):
+    #paging list
+    temp = enumerate_custom(records)
+    # current page
+    page = 0
+    # each page maximum size
+    paging_size = 5
+    # start postion
+    start_page = paging_size * 0
+    # end position
+    end_page = min(paging_size * (page + 1), len(temp))
+    # extract range(start_page, end_page)
+    temp2 = temp[start_page:end_page]
+
+    while(1):
+        # show position table
+        print()
+        # print table
+        print(f'{"Position":<10s} {"Description":<20s} {"Amount":<10s}')
+        print(f'{"":=<10s} {"":=<20s} {"":=<10s}')
+        # enumerate list of temp
+        
+        # label the data position
+        for i, item in temp2:
+            j, k = item
+            print(f'{i:<10d} {j:<20s} {k:<10d}')
+
+        print(f'{"":=<10s} {"":=<20s} {"":=<10s}')
+        pages = int(len(temp) / paging_size)
+        if(pages < len(temp)/paging_size): pages +=1
+        print(f'Page {page + 1} of {pages}')
+
+        action = input('\nWhat do you want to do? (next / find / end)? \n')
+        if (action == 'next'):
+            #next page
+            if(page < pages-1):
+                page += 1
+
+            # show list item from start_page to end_page
+            start_page = paging_size * page
+            end_page = min(paging_size * (page+1), len(temp))
+            temp2 = temp[start_page:end_page]
+
+        elif (action == 'find'):
+            keyword = input('\nPlease enter the keyword to find certain record: \n')
+            temp = [e for e in enumerate_custom(records) if(e[1][0].find(keyword) != -1)]
+            # calculate paing number
+            page = 0
+            start_page = paging_size * page
+            end_page = min(paging_size * (page+1), len(temp))
+
+            #paging
+            temp2 = temp[start_page:end_page]
+
+        elif (action == 'end'):
+            break
+
+        else:
+            sys.stderr.write('Invaild command. Try again.\n')
+
 
 initial_money, records = initialize()
 
 while True:
     # inpute the command number
-    command = input('\nWhat do you want to do (add / view / delete / exit)? ')
+    command = input('\nWhat do you want to do (add / view / view_v2 / delete / delete_v2 / exit)? ')
 
     if command == 'add':
         # add some records into current list
@@ -244,10 +342,17 @@ while True:
     elif command == 'delete':
         # return after change records
         records = delete(records)
+    elif command == 'delete_v2':
+        # return after change records
+        records = delete_v2(records)
+
     elif command == 'exit':
         # we should save file before exit
         save(initial_money, records)
         break
+    elif command == 'view_v2':
+        # paging view
+        view_v2(initial_money, records)
     else:
         # the entered commnad is not in defined command
         # print error to user

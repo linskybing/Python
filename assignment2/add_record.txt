@@ -1,0 +1,11 @@
+add
+breakfast -50
+add
+lunch -70
+add
+dinner -100
+add
+breakfast -50
+add
+salary 3500
+exit
