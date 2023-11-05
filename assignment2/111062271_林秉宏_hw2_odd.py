@@ -15,7 +15,7 @@ def initialize():
             data = fh.readline()
             # using assert to check data whether is empty
             # if empty that may occur some error, then thorw AssertionError
-            assert data, 'Invalid format in records.txt. Deleting the contents.'
+            assert data, 'File is empty.'
 
             # read user money
             try:
@@ -27,12 +27,8 @@ def initialize():
                 # maybe it is a character
                 # or some other label
                 # not a number character
-                print('Invalid format in records.txt. Deleting the contents.')
-                try:
-                    initial_money = int(input('How much money do you have?\n'))
-
-                except ValueError:
-                    print('Invalid value for money. Set to 0 by default.\n')
+                print('Invild value for money in file. Set to 0 by default')
+                initial_money = 0
                 
             # read file for each line
             # data contain '{description} {amount}'
@@ -49,13 +45,7 @@ def initialize():
         # amount is not a number character
         # or file that exists some empty filed
         # we call that is invaild record value
-        print('Invalid format in records.txt. Deleting the contents.')
-        try:
-            initial_money = int(input('How much money do you have?\n'))
-            records = []
-        except ValueError:
-            print('Invalid value for money. Set to 0 by default.\n')
-    
+        sys.stderr.write('Invild record value in the file.\n')
     except AssertionError as e:
         # file is empty
         print(str(e))
