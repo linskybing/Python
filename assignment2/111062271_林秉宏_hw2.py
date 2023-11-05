@@ -121,6 +121,59 @@ def view(initial_money, records):
     print(f'{"":=<20s} {"":=<10s}')
     print(f'Now you have {money} dollars.')
 
+def view_v2(initial_money, records):
+    money = initial_money + sum([e[1] for e in records])
+
+    #paging list
+    temp = records 
+    page = 0
+    paging_size = 5
+    start_page = paging_size * 0
+    end_page = min(paging_size * (page + 1), len(temp))
+    temp2 = temp[start_page:end_page]
+    while(1):
+        action = input('\nWhat do you want to do? (next / find / end)? \n')
+
+        #show 
+        print()
+        # print table
+        print(f'{"Description":<20s} {"Amount":<10s}')
+        print(f'{"":=<20s} {"":=<10s}')
+
+        for i, j in temp2:
+            print(f'{i:<20s} {j:<10d}')
+
+        print(f'{"":=<20s} {"":=<10s}')
+        print(f'Page {page + 1} of {len(temp) / paging_size}')
+        print(f'Now you have {money} dollars.')
+
+        if (action == 'next'):
+            #next page
+            page += 1
+
+            # show list item from start_page to end_page
+            start_page = paging_size * page
+            end_page = min(paging_size * (page+1), len(temp))
+            temp2 = temp[start_page:end_page]
+
+        elif (action == 'find'):
+            keyword = input('\nPlease enter the keyword to find certain record: \n')
+            temp = [e for e in records if(e[0].find(keyword))]
+
+            # calculate paing number
+            start_page = paging_size * page
+            end_page = min(paging_size * (page+1), len(temp))
+
+            #paging
+            temp2 = temp[start_page:end_page]
+            page = 0
+
+        elif (action == 'end'):
+            break
+
+        else:
+            sys.stderr.write('Invaild command. Try again.\n')
+
 def delete(records):
 
     try:
