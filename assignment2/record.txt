@@ -1,2 +1,5 @@
-0
+1000
+breakfast -50
+lunch -70
+dinner -100
 salary 3500
