@@ -1,22 +1,4 @@
-0
-breakfast -50
-breakfast -50
-breakfast -50
+1000
 breakfast -50
 lunch -70
-lunch -70
-lunch -70
-lunch -70
-dinner -100
-dinner -100
-dinner -100
-dinner -100
-dinner -100
-breakfast -50
-breakfast -50
-breakfast -50
-breakfast -50
-breakfast -50
-salary 3500
-salary 3500
 salary 3500
