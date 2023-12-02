@@ -106,13 +106,15 @@ class Records:
                 # if not contain two fields, it means records format error
                 assert len(i) % 3 == 0, 'The format of a record should be like this: breakfast -50.\nFail to add a record.\n'
 
+                assert categories.is_category_valid(i[0]), 'The specified category is not in the category list.\nYou can check the category list by command "view categories".\nFail to add a record.'
+
                 # extend a new record(tuple) into list
                 temp += [(i[0], i[1], int(i[2]))]
 
             # convert list element of list into tuple datastructure
             # extend record list
                 
-            self.records = self.records + temp
+            self.records += temp
 
         except AssertionError as e:
             # format error
@@ -224,7 +226,7 @@ class Records:
             print()
             # print table
             print(f'{"Position":<10s} {"Category":<20s} {"Description":<20s} {"Amount":<10s}')
-            print(f'{"":=<10s} {"":<20s} {"":=<20s} {"":=<10s}')
+            print(f'{"":=<10s} {"":=<20s} {"":=<20s} {"":=<10s}')
             # enumerate list of temp
             
             # label the data position
@@ -335,6 +337,7 @@ class Categories:
                 return category == categories
             
             return False
+        
         return valid(category, self.categories)
     
     def find_subcategories(self, category):
@@ -368,7 +371,7 @@ records = Records()
 categories = Categories()
 
 while True:
-    command = input('\nWhat do you want to do (add / view / view categories / find / delete / exit ')
+    command = input('\nWhat do you want to do (add / view / view categories / find / delete / exit)： ')
     if command == 'add':        
         records.add()
     elif command == 'view':
