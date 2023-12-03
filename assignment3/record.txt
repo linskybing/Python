@@ -11,3 +11,4 @@ income lottery 50
 salary part-time 1200
 snack cake -35
 meal lunch -70
+food asdf 324
