@@ -1,17 +1,33 @@
 import sys
+class Record:
+    """Represent a record."""
+    def __init__(self, category, description, amount):
 
+        self._amount = amount
+        self._description = description
+        self._category = category
+
+    @property
+    def get_amount(self):
+        return self._amount
+    amount = get_amount
+
+    @property
+    def get_description(self):
+        return self._description
+    description = get_description
+
+    @property
+    def get_category(self):
+        return self._category
+    category = get_category
 
 class Records:
     """Maintain a list of all the 'Record's and the initial amount of money."""
 
-    def __init__(self, category = '', description = '', amount = 0):
-        self._amount = amount
-
-        if category and description and amount:
-            self._records = [(category, description, amount)]
-        else:
-            self._records = []
-
+    def __init__(self):
+        self._amount = 0
+        self._records = []
         self.initialize()
     
     # setter and getter
@@ -59,25 +75,22 @@ class Records:
                     
                 # read file for each line
                 for data in fh.readlines():
-                    c, i, j = data.split()
-                    self.records += [(c, i, int(j))]
+                    c, i, j = data.split()                    
+                    self.records += [Record(c, i, int(j))]
 
                 print('welcome back!')
         except ValueError:
             print('Invalid format in records.txt. Deleting the contents.')
             try:
-                if not(self.amount):                
-                    self.amount = int(input('How much money do you have?\n'))
-                    self.records = []
-
+                self.amount = int(input('How much money do you have?\n'))
+                self.records = []
             except ValueError:
                 print('Invalid value for money. Set to 0 by default.\n')    
         except AssertionError as e:
             # file is empty
             print(str(e))        
             try:
-                if not(self.amount):
-                    self.amount = int(input('How much money do you have?\n'))
+                self.amount = int(input('How much money do you have?\n'))
             except ValueError:
                 print('Invalid value for money. Set to 0 by default.\n')
 
@@ -85,8 +98,7 @@ class Records:
             # when file cannot be found
             # we will require user to enter inital moeny
             try:
-                if not(self.amount):
-                    self.amount = int(input('How much money do you have?\n'))
+                self.amount = int(input('How much money do you have?\n'))
 
             except ValueError:
                 print('Invalid value for money. Set to 0 by default.\n')
@@ -114,7 +126,7 @@ class Records:
                 assert categories.is_category_valid(i[0]), 'The specified category is not in the category list.\nYou can check the category list by command "view categories".\nFail to add a record.'
 
                 # extend a new record(tuple) into list
-                temp += [(i[0], i[1], int(i[2]))]
+                temp += [Record(i[0], i[1], int(i[2]))]
 
             # convert list element of list into tuple datastructure
             # extend record list
@@ -155,8 +167,8 @@ class Records:
             print(f'{"Category":<20s} {"Description":<20s} {"Amount":<10s}')
             print(f'{"":=<20s} {"":=<20s} {"":=<10s}')
 
-            for _, i, j in paging_window:
-                print(f'{_:<20s} {i:<20s} {j:<10d}')
+            for record in paging_window:
+                print(f'{record.category:<20s} {record.description:<20s} {record.amount:<10d}')
 
             print(f'{"":=<20s} {"":=<20s} {"":=<10s}')
 
@@ -168,7 +180,7 @@ class Records:
 
             print(f'Page {page + 1} of {pages}\n')
 
-            print(f'The total amount above is {sum(map(lambda e: e[2], paging_list))}.\n')
+            print(f'The total amount above is {sum(map(lambda e: e.amount, paging_list))}.\n')
 
             action = input('\nWhat do you want to do? ( previous / next / keyword / category / end)? \n')
             if (action == 'next'):
@@ -233,9 +245,9 @@ class Records:
         """
         # extract range(start_page, end_page)
         if (keyword):
-            paging_window = list(filter(lambda record: ( record[0].find(keyword) != -1 or record[1].find(keyword) != -1), records))
+            paging_window = list(filter(lambda record: ( record.category.find(keyword) != -1 or record.description.find(keyword) != -1), records))
         elif (categories):
-            paging_window = list(filter(lambda record: (record[0] in categories), records))
+            paging_window = list(filter(lambda record: (record.category in categories), records))
         else:
             paging_window = records
 
@@ -247,7 +259,7 @@ class Records:
         """
         
         # calculate money
-        money = int(self.amount) + sum([e[2] for e in self.records])
+        money = int(self.amount) + sum([e.amount for e in self.records])
         print()
 
         # print table
@@ -255,8 +267,8 @@ class Records:
         print(f'{"":=<20s} {"":=<20s} {"":=<10s}')
 
         # print each record
-        for _, i, j in self.records:
-            print(f'{_:<20s} {i:<20s} {j:<10d}')
+        for record in self.records:
+            print(f'{record.category:<20s} {record.description:<20s} {record.amount:<10d}')
 
         print(f'{"":=<20s} {"":=<20s} {"":=<10s}')
 
@@ -317,7 +329,7 @@ class Records:
             
             # label the data position
             for i, item in temp2:
-                c, j, k = item
+                c, j, k = item.category, item.description, item.amount
                 print(f'{i:<10d} {c:<20s} {j:<20s} {k:<10d}')
 
             print(f'{"":=<10s} {"":=<20s} {"":=<20s} {"":=<10s}')
@@ -339,7 +351,7 @@ class Records:
 
             elif (action == 'find'):
                 keyword = input('\nPlease enter the keyword to find certain record: \n')
-                temp = [e for e in self.enumerate_custom(self.records) if(e[1][1].find(keyword) != -1)]
+                temp = [e for e in self.enumerate_custom(self.records) if(e[1].description.find(keyword) != -1)]
                 # calculate paing number
                 page = 0
                 start_page = paging_size * page
@@ -368,8 +380,8 @@ class Records:
             # i is descriptino
             # j is amount
             # write for each records to each lines
-            for c, i, j in self.records:
-                string = c + ' ' + i + ' ' + str(j) + '\n'
+            for record in self.records:
+                string = record.category + ' ' + record.description + ' ' + str(record.amount) + '\n'
                 fh.writelines(string)
 
     @staticmethod
