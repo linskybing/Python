@@ -5,6 +5,7 @@ food snack
 food drink
 food f1
 food f2
+food f3
 expense transportation
 transportation bus
 transportation railway
