@@ -1,29 +1,29 @@
 1000
 add
-meal,breakfast,-50
+meal breakfast -50
 add
-meal,breakfast,-50
+meal breakfast -50
 add
-drink,coffee,-100
+drink coffee -100
 add
-food,bread,-80
+food bread -80
 add
-food,sausage,-40
+food sausage -40
 add
-meal,lunch,-120
+meal lunch -120
 add
-railway,MRT,-45
+railway MRT -45
 add
-transportation,taxi,-170
+transportation taxi -170
 add
-bus,902,-20
+bus 902 -20
 add
-income,lottery,50
+income lottery 50
 add
-salary,part-time,1200
+salary part-time 1200
 add
-snack,cake,-35
+snack cake 35
 add
-meal,lunch,-70
+meal lunch -70
 view
 exit

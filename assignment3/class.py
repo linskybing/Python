@@ -104,7 +104,7 @@ class Records:
 
                 # each records should have two fields
                 # if not contain two fields, it means records format error
-                assert len(i) % 3 == 0, 'The format of a record should be like this: breakfast -50.\nFail to add a record.\n'
+                assert len(i) % 3 == 0, 'The format of a record should be like this:food breakfast -50.\nFail to add a record.\n'
 
                 assert categories.is_category_valid(i[0]), 'The specified category is not in the category list.\nYou can check the category list by command "view categories".\nFail to add a record.'
 
