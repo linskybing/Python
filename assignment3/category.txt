@@ -1,0 +1,13 @@
+None expense
+expense food
+food meal
+food snack
+food drink
+expense transportation
+transportation bus
+transportation railway
+None income
+income salary
+income bonus
+food f1
+food f2
