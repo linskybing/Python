@@ -75,7 +75,7 @@ def add(records):
 
             # each records should have two fields
             # if not contain two fields, it means records format error
-            assert len(i) % 2 == 0, 'The format of a record should be like this: breakfast -50.\nFail to add a record.\n'
+            assert len(i) % 2 == 0, 'The format of a record should be like this:food breakfast -50.\nFail to add a record.\n'
 
             # extend a new record(tuple) into list
             temp += [(i[0], int(i[1]))]
