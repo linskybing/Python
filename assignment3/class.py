@@ -7,7 +7,6 @@ class Records:
     def __init__(self):
         self._amount = 0
         self._records = []
-
         self.initialize()
     
     # setter and getter
@@ -377,8 +376,10 @@ class Records:
 class Categories:
     """Maintain the category list and provide some methods."""
     def __init__(self):
-        self._categories = ['expense', ['food', ['meal', 'snack', 'drink'], 'transportation', ['bus', 'railway']], 'income', ['salary', 'bonus']]        
-    
+        self._categories = self.initialize_categories()   
+        self._file = []        
+        self.init_file()
+
     # getter categories attribute
     def get_categories(self):
         return self._categories
@@ -386,9 +387,95 @@ class Categories:
     # setter categories attribute
     def set_categories(self, categories):
         self._categories = categories
+
+    # getter file attribute
+    def get_file(self):
+        return self._file
+    
+    # setter file attribute
+    def set_file(self, file):        
+        self._file = file
     
     categories = property(lambda self: self.get_categories(), \
-                          lambda  self, categories: self.get_categories(categories))
+                          lambda  self, categories: self.set_categories(categories))
+    file = property(lambda self: self.get_file(), \
+                          lambda  self, file: self.set_file(file))
+    
+    @staticmethod
+    def initialize_categories():
+        """
+            get category from file
+        """
+        # using recursive to contruct multilist
+        def construct_multilist(data, root):
+            if not(data.get(root)):
+                return [root]
+            else:
+                result = []
+                for i in data[root]:
+                    result += construct_multilist(data, i)
+                return [root, result]
+        try:
+            #read file
+            temp = {}
+            with open('category.txt', 'r') as fh:
+                    # detect file whether is empty
+                    for it in fh.readlines():
+                        parent, child = it.strip().split()
+                        if not(temp.get(parent)): temp[parent] = []
+                        temp[parent] += [child]
+
+            return construct_multilist(temp, 'None')[1]
+        except:
+            return ['expense', ['food', ['meal', 'snack', 'drink'], 'transportation', ['bus', 'railway']], 'income', ['salary', 'bonus']] 
+
+    def init_file(self):
+        # using innner function to contruct file content
+        # file will be used in turn out system to write file
+        def show_category_table(category, root):
+            if type(category) in {list}:
+                result = []
+                parent = ""
+                for child in category:
+                    if type(child) in {list}:
+                        result += show_category_table(child, parent)
+                    else:
+                        result += [f"{root} {child}\n"]
+                        parent = child
+                return result
+            else:
+                return [f"{root} {category}\n"]
+            
+        self.file = show_category_table(self.categories, "None")
+
+    def add_category(self):
+        try:
+            # split each line that seperated by ',' into list 
+            raw_record = input('Add new category with parent category and new category (separate by spaces):\ncat1 cat2\n').split(',')
+            temp = []
+            for string in raw_record:
+                i = string.strip().split()
+                # each records should have two fields
+                # if not contain two fields, it means records format error
+                assert len(i) % 2 == 0, 'The format of a category should be like this:food breakfast.\nFail to add a category.\n'
+
+                assert categories.is_category_valid(i[0]) or i[0] == "None", 'The specified category is not in the category list.\nYou can check the category list by command "view categories".\nFail to add a category.'
+                # extend a new record(tuple) into list
+                temp += [f"{i[0]} {i[1]}\n"]
+            # convert list element of list into tuple datastructure
+            # extend record list
+            self.file += temp
+
+        except AssertionError as e:
+            # format error
+            print(str(e))
+
+    def save(self):
+        """
+        save category to the file
+        """
+        with open('category.txt', 'w') as fh:
+            fh.writelines(self.file)
     
     def view(self):
         """
@@ -456,7 +543,7 @@ records = Records()
 categories = Categories()
 
 while True:
-    command = input('\nWhat do you want to do (add / view / view categories / find / delete / exit)： ')
+    command = input('\nWhat do you want to do (add / view / view categories / add categories / find / delete / exit)： ')
     if command == 'add':        
         records.add(categories)
     elif command == 'view':
@@ -465,11 +552,14 @@ while True:
         records.delete()        
     elif command == 'view categories':
         categories.view()
+    elif command == 'add categories':
+        categories.add_category()
     elif command == 'find':
         records.find(categories)
         pass
     elif command == 'exit':
         records.save()
+        categories.save()
         break
     else:
         sys.stderr.write('Invalid command. Try again.\n')
