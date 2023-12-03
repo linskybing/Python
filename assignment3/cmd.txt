@@ -2,8 +2,6 @@
 add
 meal breakfast -50
 add
-meal breakfast -50
-add
 drink coffee -100
 add
 food bread -80
@@ -22,7 +20,7 @@ income lottery 50
 add
 salary part-time 1200
 add
-snack cake 35
+snack cake -35
 add
 meal lunch -70
 view

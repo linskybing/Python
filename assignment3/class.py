@@ -5,9 +5,6 @@ class Records:
     """Maintain a list of all the 'Record's and the initial amount of money."""
 
     def __init__(self):
-        # 1. Read from 'records.txt' or prompt for initial amount of money.
-        # 2. Initialize the attributes (self._records and self.amount)
-        #    from the file or user input.
         self._amount = 0
         self._records = []
 
@@ -125,6 +122,11 @@ class Records:
             print('Invaild value for money.\nFail to add a record.\n')
         
     def find(self, categories):
+        """ 
+        using paging method to show records
+        each page contain five record
+        user can choose any action to filter record
+        """
         # each page maximum size
         paging_size = 5
         # current page
@@ -218,6 +220,9 @@ class Records:
 
     @staticmethod
     def view_paging(records, categories = [], keyword = ''):
+        """
+        return paging list and filter with categories or keyword
+        """
         # extract range(start_page, end_page)
         if (keyword):
             paging_window = list(filter(lambda record: ( record[0].find(keyword) != -1 or record[1].find(keyword) != -1), records))
@@ -229,6 +234,10 @@ class Records:
         return paging_window
 
     def view(self):
+        """
+        show all record in one page
+        """
+        
         # calculate money
         money = int(self.amount) + sum([e[2] for e in self.records])
         print()
@@ -246,8 +255,9 @@ class Records:
         print(f'Now you have {money} dollars.')
 
     def delete(self):
-        # 1. Define the formal parameter.
-        # 2. Delete the specified record from self._records.
+        """
+        delete certain record in self._record by setter
+        """
         try:
 
             # show position table
@@ -272,6 +282,10 @@ class Records:
             print()
 
     def show_delete_paging(self):
+        """
+        show record in paging methon and label each record a unique number
+        user can use number to select the record that want to delete
+        """
         #paging list
         temp = self.enumerate_custom(self.records)
         # current page
@@ -333,7 +347,9 @@ class Records:
                 sys.stderr.write('Invaild command. Try again.\n')
 
     def save(self):
-
+        """
+        save record to the file
+        """
         with open('record.txt', 'w') as fh:
             # write the initial money into file
             fh.write(str(self.amount))
@@ -350,6 +366,9 @@ class Records:
 
     @staticmethod
     def enumerate_custom(seq):
+        """
+        label the record with index
+        """
         temp = []
         for i in range(0, len(seq)):
             temp += [(i, seq[i])]
@@ -372,10 +391,10 @@ class Categories:
                           lambda  self, categories: self.get_categories(categories))
     
     def view(self):
+        """
+        print categories by recursive with indent
+        """
         def view_categories(L, level = 0):
-            """
-                print categories by recursive with indent
-            """
             if type(L) in {list}:
                 # if L is list, call recursive
                 for item in L:
@@ -387,12 +406,11 @@ class Categories:
         view_categories(self.categories)
 
     def is_category_valid(self, category):
-
+        """
+        this function is find category whether is in exists categories
+        """
         # inner function to check category whether already exist
         def valid(category, categories):
-            """
-                this function is find category whether is in exists categories
-            """
             if type(categories) in {list}:
                 for item in categories:
                     if (valid(category, item)):
@@ -405,6 +423,9 @@ class Categories:
         return valid(category, self.categories)
     
     def find_subcategories(self, category):
+        """
+        return category and its subcategory
+        """
         def subcategories(category, categories):
             # generator inner function
             def find_subcategories_gen(category, categories, found = False):
