@@ -3,11 +3,11 @@ expense food
 food meal
 food snack
 food drink
+food f1
+food f2
 expense transportation
 transportation bus
 transportation railway
 None income
 income salary
 income bonus
-food f1
-food f2

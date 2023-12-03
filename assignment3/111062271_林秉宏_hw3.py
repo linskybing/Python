@@ -459,7 +459,9 @@ class Categories:
                 # if not contain two fields, it means records format error
                 assert len(i) % 2 == 0, 'The format of a category should be like this:food breakfast.\nFail to add a category.\n'
 
-                assert categories.is_category_valid(i[0]) or i[0] == "None", 'The specified category is not in the category list.\nYou can check the category list by command "view categories".\nFail to add a category.'
+                assert (categories.is_category_valid(i[0])) or i[0] == "None", 'The specified category is not in the category list.\nYou can check the category list by command "view categories".\nFail to add a category.'
+                
+                assert not(categories.is_category_valid(i[i])), 'The child category already exist.\n'
                 # extend a new record(tuple) into list
                 temp += [f"{i[0]} {i[1]}\n"]
             # convert list element of list into tuple datastructure
