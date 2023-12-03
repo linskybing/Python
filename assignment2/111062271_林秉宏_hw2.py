@@ -228,7 +228,7 @@ def delete(records):
     return records
 
 def delete_v2(records):
-
+    
     try:
 
         # show position table
