@@ -86,7 +86,7 @@ class Records:
             except ValueError:
                 print('Invalid value for money. Set to 0 by default.\n')
     
-    def add(self):
+    def add(self, categories):
         try:
 
             # split each line that seperated by ',' into list 
@@ -124,62 +124,126 @@ class Records:
             # invaild input
             print('Invaild value for money.\nFail to add a record.\n')
         
-    def view(self):
-        #paging list        
-        temp = self.records 
-        # current page
-        page = 0
+    def find(self, categories):
         # each page maximum size
         paging_size = 5
+        # current page
+        page = 0
+        # raw paging data
+        paging_list = self.view_paging(self.records)       
         # start postion
-        start_page = paging_size * 0
-        # end position
-        end_page = min(paging_size * (page + 1), len(temp))
+        start_page = paging_size * page
+        # ending position
+        end_page = min(paging_size * (page + 1), len(paging_list))
         # extract range(start_page, end_page)
-        temp2 = temp[start_page:end_page]
+        paging_window = paging_list[start_page:end_page]
 
-        while(1):
+        while(1):  
             #show 
             print()
             # print table
             print(f'{"Category":<20s} {"Description":<20s} {"Amount":<10s}')
             print(f'{"":=<20s} {"":=<20s} {"":=<10s}')
 
-            for _, i, j in temp2:
+            for _, i, j in paging_window:
                 print(f'{_:<20s} {i:<20s} {j:<10d}')
 
             print(f'{"":=<20s} {"":=<20s} {"":=<10s}')
-            pages = int(len(temp) / paging_size)
-            if(pages < len(temp)/paging_size): pages +=1
-            if(pages == 0): pages = 1
-            print(f'Page {page + 1} of {pages}')
 
-            action = input('\nWhat do you want to do? (next / find / end)? \n')
+
+            pages = int(len(paging_list) / paging_size)
+
+            if(pages < len(paging_list)/paging_size): pages +=1
+            if(pages == 0): pages = 1
+
+            print(f'Page {page + 1} of {pages}\n')
+
+            print(f'The total amount above is {sum(map(lambda e: e[2], paging_list))}.\n')
+
+            action = input('\nWhat do you want to do? ( previous / next / keyword / category / end)? \n')
             if (action == 'next'):
                 #next page
                 if(page < pages-1):
-                    page += 1
-
+                    page += 1    
+                # start postion
+                start_page = paging_size * page
+                # ending position
+                end_page = min(paging_size * (page + 1), len(paging_list))
                 # show list item from start_page to end_page
+                paging_window = paging_list[start_page:end_page]
+            elif (action == 'previous'):
+                #previous page
+                if(page > 0):
+                    page -= 1                
+                 # start postion
                 start_page = paging_size * page
-                end_page = min(paging_size * (page+1), len(temp))
-                temp2 = temp[start_page:end_page]
+                # ending position
+                end_page = min(paging_size * (page + 1), len(paging_list))
+                # show list item from start_page to end_page
+                paging_window = paging_list[start_page:end_page]
 
-            elif (action == 'find'):
-                keyword = input('\nPlease enter the keyword to find certain record: \n')
-                temp = [e for e in self.records if(e[1].find(keyword) != -1)]
-
-                # calculate paing number
+            elif (action == 'keyword'):
+                keyword = input('\nWhich keyword do you want to find?\n')
+                # reset paing number
                 page = 0
+                # get paging
+                paging_list = self.view_paging(self.records, keyword = keyword)
+                # start postion
                 start_page = paging_size * page
-                end_page = min(paging_size * (page+1), len(temp))
+                # ending position
+                end_page = min(paging_size * (page + 1), len(paging_list))
+                # extract range(start_page, end_page)
+                paging_window = paging_list[start_page:end_page]
 
-                #paging
-                temp2 = temp[start_page:end_page]
+            elif (action == 'category'):
+                category = input('\nWhich category do you want to find?\n')
+
+                category_list = categories.find_subcategories(category)
+
+                # reset paing number
+                page = 0
+                # get paging
+                paging_list = self.view_paging(self.records, category_list)
+                # start postion
+                start_page = paging_size * page
+                # ending position
+                end_page = min(paging_size * (page + 1), len(paging_list))
+                # extract range(start_page, end_page)
+                paging_window = paging_list[start_page:end_page]
+
             elif (action == 'end'):
                 break
             else:
                 sys.stderr.write('Invaild command. Try again.\n')
+
+    @staticmethod
+    def view_paging(records, categories = [], keyword = ''):
+        # extract range(start_page, end_page)
+        if (keyword):
+            paging_window = list(filter(lambda record: ( record[0].find(keyword) != -1 or record[1].find(keyword) != -1), records))
+        elif (categories):
+            paging_window = list(filter(lambda record: (record[0] in categories), records))
+        else:
+            paging_window = records
+
+        return paging_window
+
+    def view(self):
+        # calculate money
+        money = int(self.amount) + sum([e[2] for e in self.records])
+        print()
+
+        # print table
+        print(f'{"Category":<20s} {"Description":<20s} {"Amount":<10s}')
+        print(f'{"":=<20s} {"":=<20s} {"":=<10s}')
+
+        # print each record
+        for _, i, j in self.records:
+            print(f'{_:<20s} {i:<20s} {j:<10d}')
+
+        print(f'{"":=<20s} {"":=<20s} {"":=<10s}')
+
+        print(f'Now you have {money} dollars.')
 
     def delete(self):
         # 1. Define the formal parameter.
@@ -373,7 +437,7 @@ categories = Categories()
 while True:
     command = input('\nWhat do you want to do (add / view / view categories / find / delete / exit)： ')
     if command == 'add':        
-        records.add()
+        records.add(categories)
     elif command == 'view':
         records.view()
     elif command == 'delete':        
@@ -381,9 +445,7 @@ while True:
     elif command == 'view categories':
         categories.view()
     elif command == 'find':
-        #category = input('Which category do you want to find? ')
-        #target_categories = categories.find_subcategories(category)
-        #records.find()
+        records.find(categories)
         pass
     elif command == 'exit':
         records.save()
