@@ -4,14 +4,9 @@ import sys
 class Records:
     """Maintain a list of all the 'Record's and the initial amount of money."""
 
-    def __init__(self, category = '', description = '', amount = 0):
-        self._amount = amount
-
-        if category and description and amount:
-            self._records = [(category, description, amount)]
-        else:
-            self._records = []
-
+    def __init__(self):
+        self._amount = 0
+        self._records = []
         self.initialize()
     
     # setter and getter
@@ -66,18 +61,15 @@ class Records:
         except ValueError:
             print('Invalid format in records.txt. Deleting the contents.')
             try:
-                if not(self.amount):                
-                    self.amount = int(input('How much money do you have?\n'))
-                    self.records = []
-
+                self.amount = int(input('How much money do you have?\n'))
+                self.records = []
             except ValueError:
                 print('Invalid value for money. Set to 0 by default.\n')    
         except AssertionError as e:
             # file is empty
             print(str(e))        
             try:
-                if not(self.amount):
-                    self.amount = int(input('How much money do you have?\n'))
+                self.amount = int(input('How much money do you have?\n'))
             except ValueError:
                 print('Invalid value for money. Set to 0 by default.\n')
 
@@ -85,8 +77,7 @@ class Records:
             # when file cannot be found
             # we will require user to enter inital moeny
             try:
-                if not(self.amount):
-                    self.amount = int(input('How much money do you have?\n'))
+                self.amount = int(input('How much money do you have?\n'))
 
             except ValueError:
                 print('Invalid value for money. Set to 0 by default.\n')
